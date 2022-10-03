@@ -5,6 +5,7 @@ public class PlayerInputHandler : MonoBehaviour
 {
     private PlayerInput _input;
     private Vector2 _move_direction;
+    private Vector2 _look_direction;
     private float _fly_up = 0;
     private float _fly_down = 0;
 
@@ -33,6 +34,8 @@ public class PlayerInputHandler : MonoBehaviour
         _input.actions["FlyUp"].canceled += OnFlyUpStop;
         _input.actions["FlyDown"].performed += OnFlyDown;
         _input.actions["FlyDown"].canceled += OnFlyDownStop;
+        _input.actions["Look"].performed += OnLook;
+        _input.actions["Look"].canceled += OnLook;
     }
 
     private void OnDisable()
@@ -44,11 +47,19 @@ public class PlayerInputHandler : MonoBehaviour
         _input.actions["FlyUp"].canceled -= OnFlyUpStop;
         _input.actions["FlyDown"].performed -= OnFlyDown;
         _input.actions["FlyDown"].canceled -= OnFlyDownStop;
+        _input.actions["Look"].performed -= OnLook;
+        _input.actions["Look"].canceled -= OnLook;
     }
 
     private void OnMove(InputAction.CallbackContext obj)
     {
         _move_direction = obj.ReadValue<Vector2>();
+    }
+
+    private void OnLook(InputAction.CallbackContext obj)
+    {
+        _look_direction = obj.ReadValue<Vector2>();
+        Debug.Log("OnLook: " + _look_direction);
     }
 
     private void OnFlyUp(InputAction.CallbackContext obj)
@@ -80,6 +91,18 @@ public class PlayerInputHandler : MonoBehaviour
         else
         {
             return Vector3.zero;
+        }
+    }
+
+    public Vector2 GetLookDirection()
+    {
+        if (CanProcessInput())
+        {
+            return _look_direction;
+        }
+        else
+        {
+            return Vector2.zero;
         }
     }
 
