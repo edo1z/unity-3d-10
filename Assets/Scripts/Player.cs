@@ -6,11 +6,10 @@ public class Player : MonoBehaviour
 {
     [SerializeField] private float _move_speed = 10f;
     [SerializeField] private float _fly_speed = 10f;
-    [SerializeField] private float _look_sensitive_x = 0.4f;
-    [SerializeField] private float _look_sensitive_y = 0.1f;
+    [SerializeField] private float _look_sensitive_x = 9f;
+    [SerializeField] private float _look_sensitive_y = 3f;
 
     private PlayerInputHandler _input;
-    private GameObject _player;
     private CharacterController _chara;
     private GameObject _cam;
 
@@ -23,18 +22,33 @@ public class Player : MonoBehaviour
 
     private void Aim()
     {
-      Vector2 angles = _cam.transform.eulerAngles;
       Vector2 direction = _input.GetLookDirection();
-      float x = angles.x + direction.y * 0.01f * _look_sensitive_y * -1f;
-      float y = angles.y + direction.x * 0.01f * _look_sensitive_x;
-      _cam.transform.rotation = Quaternion.Euler(x, y, 0);
+      if (direction == Vector2.zero) return;
+      Vector2 angles = transform.eulerAngles;
+      float x = direction.y * 0.01f * _look_sensitive_y * -1f;
+      float y = direction.x * 0.01f * _look_sensitive_x;
+      if (x > 75f) x = 75f;
+      if (x < -75f) x = -75f;
+      if (y > 75f) y = 75f;
+      if (y < -75f) y = -75f;
+      transform.rotation = Quaternion.Euler(angles.x + x, angles.y + y, 0);
     }
 
     private void Move()
     {
-        Vector3 move = _input.GetMoveDirection() * _move_speed * Time.deltaTime;
-        move += new Vector3(0f, _input.GetFlyDirection(), 0f) * _fly_speed * Time.deltaTime;
-        _chara.Move(move);
+        Vector2 move_direction = _input.GetMoveDirection();
+        float fly_direction = _input.GetFlyDirection();
+        Vector3 posi = transform.position;
+        if (move_direction != Vector2.zero) 
+        {
+          posi += transform.right * move_direction.x * _move_speed * Time.deltaTime;
+          posi += transform.forward * move_direction.y * _move_speed * Time.deltaTime;
+        }
+        if (fly_direction != 0f)
+        {
+          posi += transform.up * fly_direction * _fly_speed * Time.deltaTime;
+        }
+        _chara.Move(posi - transform.position);
     }
 
     private void Update()

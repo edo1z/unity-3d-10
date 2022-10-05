@@ -82,15 +82,15 @@ public class PlayerInputHandler : MonoBehaviour
         _fly_down = 0f;
     }
 
-    public Vector3 GetMoveDirection()
+    public Vector2 GetMoveDirection()
     {
         if (CanProcessInput())
         {
-            return new Vector3(_move_direction.x, 0, _move_direction.y).normalized;
+            return _move_direction.normalized;
         }
         else
         {
-            return Vector3.zero;
+            return Vector2.zero;
         }
     }
 
